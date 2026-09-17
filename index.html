@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101917" />
+    <title>Vigía · cámara privada</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <style>
+      :root { color-scheme: dark; --ink:#edf5f1; --muted:#a8bbb3; --canvas:#101917; --surface:#172521; --line:#2d423b; --good:#74e2ae; --warn:#ffd27d; --danger:#ff8a8a; --accent:#9be6c2; }
+      * { box-sizing:border-box; }
+      body { margin:0; min-height:100vh; background:radial-gradient(circle at 20% -5%, #24483d 0, transparent 34rem), var(--canvas); color:var(--ink); font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+      main { width:min(100%, 1100px); margin:auto; padding:clamp(18px,4vw,42px); }
+      header { display:flex; gap:18px; align-items:center; justify-content:space-between; margin-bottom:30px; }
+      .brand { display:flex; gap:12px; align-items:center; font-weight:700; letter-spacing:.02em; }
+      .mark { width:38px; height:38px; display:grid; place-items:center; border:1px solid #538574; border-radius:12px; background:#19342b; font-size:20px; }
+      .privacy { color:var(--good); font-size:13px; }
+      .screen { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(290px,.8fr); gap:22px; align-items:start; }
+      .card { background:color-mix(in srgb, var(--surface) 93%, transparent); border:1px solid var(--line); border-radius:20px; overflow:hidden; }
+      .viewer { position:relative; min-height:300px; display:grid; place-items:center; background:#080d0b; aspect-ratio:16/10; }
+      video { display:block; width:100%; height:100%; max-height:72vh; object-fit:contain; background:#080d0b; }
+      .video-empty { padding:28px; text-align:center; color:var(--muted); }
+      .video-empty strong { display:block; color:var(--ink); font-size:19px; margin-bottom:7px; }
+      .pill { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:7px; padding:6px 9px; border-radius:999px; background:#13231eD9; border:1px solid #38584c; font-size:12px; font-weight:600; }
+      .pill.visible { display:flex; }.dot { width:8px;height:8px;border-radius:50%;background:var(--good); }.pill.alert .dot{ background:var(--danger); box-shadow:0 0 0 4px #ff8a8a2b; }
+      .panel { padding:22px; }
+      h1,h2,p { margin-top:0; } h1 { font-size:clamp(24px,4vw,34px); line-height:1.12; margin-bottom:9px; } h2 { font-size:18px; margin-bottom:6px; }.lede,.muted { color:var(--muted); }
+      .role-choice { display:grid; gap:12px; margin-top:20px; }.role { width:100%; text-align:left; display:flex; align-items:center; gap:13px; border:1px solid var(--line); color:var(--ink); background:#1a2b26; border-radius:14px; padding:15px; cursor:pointer; font:inherit; }.role:hover { border-color:#568d78; }.role-icon { font-size:24px; }.role small { color:var(--muted); display:block; margin-top:2px; }
+      .form-row { display:grid; gap:7px; margin:15px 0; }.form-row label { font-size:14px; font-weight:600; }.controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; } button,select,input { font:inherit; } button { border:0; border-radius:11px; padding:11px 14px; cursor:pointer; font-weight:650; background:#29473d; color:var(--ink); } button.primary { background:var(--accent); color:#10261e; } button.danger { background:#512b2b; color:#ffe7e7; } button:disabled { opacity:.55; cursor:not-allowed; } select,input[type="range"] { width:100%; min-height:42px; border:1px solid var(--line); border-radius:10px; padding:0 10px; color:var(--ink); background:#11201b; } input[type="range"] { padding:0; accent-color:var(--accent); } .check { display:flex; gap:9px; align-items:center; cursor:pointer; color:var(--muted); font-size:14px; }.check input { width:18px; height:18px; accent-color:var(--accent); }
+      .status { display:flex; gap:9px; align-items:flex-start; margin:16px 0 0; border-left:3px solid var(--line); padding:8px 11px; font-size:14px; color:var(--muted); }.status.good { border-color:var(--good); color:#d2eee0; }.status.warn { border-color:var(--warn); color:#f4e2b5; }.status.error { border-color:var(--danger); color:#ffd0d0; }
+      .share { margin-top:18px; padding:13px; border-radius:13px; border:1px solid #386453; background:#11241d; }.share[hidden], .advanced[hidden] { display:none; }.share label { display:block; color:var(--good); font-size:13px; font-weight:650; margin-bottom:7px; }.share-line { display:flex; gap:8px; }.share input { min-width:0; font-size:12px; }.tiny { font-size:12px; color:var(--muted); margin:8px 0 0; }.motion { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }.motion-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }.motion-output { font-size:13px; color:var(--muted); }.motion-output.alert { color:var(--danger); font-weight:650; }.info { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }.info strong { color:var(--ink); }.viewer-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:15px; }
+      .advanced { margin-top:12px; padding:13px; border:1px dashed #46685c; border-radius:12px; }.advanced summary { cursor:pointer; color:var(--muted); font-size:13px; }.advanced .form-row { margin-bottom:0; }.advanced input { font-size:13px; }
+      canvas { display:none; }
+      @media (max-width:780px) { main{padding:18px 14px 32px}.screen{grid-template-columns:1fr}.viewer{min-height:230px;aspect-ratio:16/10}header{margin-bottom:21px}.privacy{display:none}.panel{padding:18px} }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="brand"><span class="mark" aria-hidden="true">◉</span> Vigía</div>
+        <div class="privacy">● Vídeo WebRTC cifrado de extremo a extremo</div>
+      </header>
+
+      <div class="screen">
+        <section class="card viewer" aria-label="Vídeo en directo">
+          <video id="video" autoplay playsinline muted></video>
+          <div id="videoEmpty" class="video-empty"><strong>Esperando la cámara</strong><span>El vídeo aparecerá aquí cuando ambos dispositivos estén conectados.</span></div>
+          <div id="livePill" class="pill"><span class="dot"></span><span id="pillText">EN DIRECTO</span></div>
+        </section>
+
+        <section class="card panel">
+          <div id="chooser">
+            <h1>Vigila sin grabar.</h1>
+            <p class="lede">Conecta el celular como cámara y mira desde esta URL privada en tu Mac.</p>
+            <div class="role-choice">
+              <button class="role" id="chooseCamera" type="button"><span class="role-icon">⌁</span><span><strong>Usar este celular como cámara</strong><small>Activa la cámara y crea un enlace privado.</small></span></button>
+              <button class="role" id="chooseViewer" type="button"><span class="role-icon">▣</span><span><strong>Ver una cámara</strong><small>Pega aquí el enlace que creó el celular.</small></span></button>
+            </div>
+          </div>
+
+          <div id="cameraPanel" hidden>
+            <h2>Cámara del celular</h2>
+            <p class="muted">Mantén esta pestaña abierta, con el celular conectado a la corriente.</p>
+            <div class="form-row"><label for="quality">Calidad de transmisión</label><select id="quality"><option value="balanced">1080p a 30 fps · recomendada</option><option value="max">Máxima compatible · puede calentar el celular</option><option value="saver">720p a 24 fps · ahorra batería</option></select></div>
+            <label class="check"><input id="includeAudio" type="checkbox" checked> Incluir audio ambiental</label>
+            <div class="controls"><button id="startCamera" class="primary" type="button">Iniciar cámara</button><button id="stopCamera" class="danger" type="button" disabled>Detener</button></div>
+            <div id="shareBox" class="share" hidden><label for="shareLink">Enlace privado para abrir en la Mac</label><div class="share-line"><input id="shareLink" readonly aria-label="Enlace privado"><button id="copyLink" type="button">Copiar</button></div><p class="tiny">Quien tenga este enlace puede ver la cámara. No lo compartas; recarga esta página para crear uno nuevo.</p></div>
+            <div class="motion"><div class="motion-head"><label class="check"><input id="motionEnabled" type="checkbox" checked> Detectar movimiento</label><span id="motionOutput" class="motion-output" aria-live="polite">En espera</span></div><div class="form-row"><label for="sensitivity">Sensibilidad</label><input id="sensitivity" type="range" min="5" max="60" value="22"></div></div>
+            <div class="status" id="cameraStatus" role="status">Listo para pedir permiso a la cámara.</div>
+          </div>
+
+          <div id="viewerPanel" hidden>
+            <h1>Vista en directo</h1>
+            <p class="lede" id="viewerIntro">Abre el enlace privado que generó el celular.</p>
+            <div id="pasteArea" class="form-row"><label for="viewLink">Enlace de la cámara</label><input id="viewLink" type="url" placeholder="https://…/#view=…"><button id="openView" class="primary" type="button">Conectar cámara</button></div>
+            <div class="status warn" id="viewerStatus" role="status">Aún no hay una cámara conectada.</div>
+            <div id="viewerMotion" class="motion" hidden><div class="motion-head"><strong>Movimiento</strong><span id="viewerMotionOutput" class="motion-output" aria-live="polite">Sin actividad</span></div></div>
+            <div class="viewer-actions"><button id="toggleSound" type="button" disabled>Activar audio</button><button id="fullScreen" type="button" disabled>Pantalla completa</button></div>
+          </div>
+
+          <details class="advanced" id="turnSettings" hidden><summary>Conexiones móviles difíciles: configurar TURN</summary><p class="tiny">Para ver desde otra red con fiabilidad total, añade tu servidor TURN propio. Estos datos quedan sólo en este navegador y también se incluyen en el enlace de vista.</p><div class="form-row"><label for="turnUrl">URL TURN</label><input id="turnUrl" placeholder="turn:turn.tudominio.com:3478"></div><div class="form-row"><label for="turnUser">Usuario TURN</label><input id="turnUser" autocomplete="off"></div><div class="form-row"><label for="turnPass">Contraseña TURN</label><input id="turnPass" type="password" autocomplete="off"></div></details>
+
+          <p class="info"><strong>Privacidad:</strong> el video no se graba ni pasa por esta página; viaja cifrado mediante WebRTC entre los dispositivos. El servicio de emparejamiento sólo ayuda a encontrarlos. Para una vigilancia de seguridad, úsalo como apoyo y revisa que esté conectado antes de alejarte.</p>
+        </section>
+      </div>
+    </main>
+    <canvas id="motionCanvas" width="128" height="72" aria-hidden="true"></canvas>
+
+    <script>
+      (() => {
+        const $ = (id) => document.getElementById(id);
+        const ui = { video: $('video'), videoEmpty: $('videoEmpty'), livePill: $('livePill'), pillText: $('pillText'), chooser: $('chooser'), cameraPanel: $('cameraPanel'), viewerPanel: $('viewerPanel'), cameraStatus: $('cameraStatus'), viewerStatus: $('viewerStatus'), shareBox: $('shareBox'), shareLink: $('shareLink'), motionOutput: $('motionOutput'), viewerMotion: $('viewerMotion'), viewerMotionOutput: $('viewerMotionOutput'), turnSettings: $('turnSettings') };
+        let peer, stream, activeCall, activeData, motionTimer, lastFrame, motionCooldown = 0, viewerAudioOn = false;
+        const params = new URLSearchParams(location.search);
+        const hashParams = new URLSearchParams(location.hash.slice(1));
+        const viewRoom = params.get('view') || hashParams.get('view');
+        const setStatus = (node, text, kind = '') => { node.textContent = text; node.className = `status ${kind}`; };
+        const setLive = (visible, alert = false) => { ui.livePill.classList.toggle('visible', visible); ui.livePill.classList.toggle('alert', alert); ui.pillText.textContent = alert ? 'MOVIMIENTO' : 'EN DIRECTO'; };
+        const randomRoom = () => `vigia-${crypto.getRandomValues(new Uint32Array(4)).join('-')}`;
+        const updateShareLink = (room) => {
+          const url = new URL(location.href); url.search = ''; url.hash = '';
+          const turn = readTurn();
+          const privateLink = new URLSearchParams({ view: room });
+          if (turn) privateLink.set('turn', encodeURIComponent(btoa(JSON.stringify(turn))));
+          url.hash = privateLink.toString();
+          ui.shareLink.value = url.href;
+        };
+        const readTurn = () => { const urls = $('turnUrl').value.trim(); if (!urls) return null; return { urls, username: $('turnUser').value.trim(), credential: $('turnPass').value }; };
+        const turnFromHash = () => { try { const found = new URLSearchParams(location.hash.slice(1)).get('turn'); return found ? JSON.parse(atob(decodeURIComponent(found))) : null; } catch { return null; } };
+        const iceConfig = () => { const config = [{ urls: 'stun:stun.l.google.com:19302' }]; const turn = readTurn() || turnFromHash(); if (turn) config.push(turn); return { iceServers: config }; };
+        const peerOptions = () => ({ config: iceConfig(), debug: 1 });
+        const showCamera = () => { ui.chooser.hidden = true; ui.cameraPanel.hidden = false; ui.viewerPanel.hidden = true; ui.turnSettings.hidden = false; };
+        const showViewer = () => { ui.chooser.hidden = true; ui.cameraPanel.hidden = true; ui.viewerPanel.hidden = false; ui.turnSettings.hidden = true; };
+        const showVideo = (media, muted) => { ui.video.srcObject = media; ui.video.muted = muted; ui.videoEmpty.hidden = true; ui.video.play().catch(() => {}); };
+        const stopEverything = () => {
+          clearInterval(motionTimer); motionTimer = null; lastFrame = null;
+          if (activeCall) { activeCall.close(); activeCall = null; }
+          if (activeData) { activeData.close(); activeData = null; }
+          if (peer) { peer.destroy(); peer = null; }
+          if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
+          ui.video.srcObject = null; ui.videoEmpty.hidden = false; setLive(false);
+        };
+        const qualityConstraints = () => {
+          const option = $('quality').value;
+          if (option === 'max') return { width: { ideal: 3840 }, height: { ideal: 2160 }, frameRate: { ideal: 30, max: 30 } };
+          if (option === 'saver') return { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 24, max: 24 } };
+          return { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } };
+        };
+        const sendData = (event) => { if (activeData && activeData.open) activeData.send(event); };
+        const startMotionDetection = () => {
+          clearInterval(motionTimer); lastFrame = null;
+          const canvas = $('motionCanvas'), context = canvas.getContext('2d', { willReadFrequently: true });
+          motionTimer = setInterval(() => {
+            if (!stream || !$('motionEnabled').checked || ui.video.readyState < 2) return;
+            context.drawImage(ui.video, 0, 0, canvas.width, canvas.height);
+            const frame = context.getImageData(0, 0, canvas.width, canvas.height).data;
+            if (!lastFrame) { lastFrame = frame; return; }
+            let changes = 0;
+            for (let i = 0; i < frame.length; i += 16) {
+              const delta = Math.abs(frame[i] - lastFrame[i]) + Math.abs(frame[i + 1] - lastFrame[i + 1]) + Math.abs(frame[i + 2] - lastFrame[i + 2]);
+              if (delta > 75) changes++;
+            }
+            lastFrame = frame;
+            const percent = changes / (frame.length / 16) * 100;
+            const moved = percent >= Number($('sensitivity').value) / 10;
+            if (moved && Date.now() > motionCooldown) {
+              motionCooldown = Date.now() + 6000;
+              ui.motionOutput.textContent = 'Movimiento detectado'; ui.motionOutput.classList.add('alert'); setLive(true, true); sendData({ type: 'motion', at: Date.now(), level: percent.toFixed(1) });
+              setTimeout(() => { ui.motionOutput.textContent = 'Vigilando'; ui.motionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2200);
+            }
+          }, 360);
+        };
+        const announceCamera = (room) => {
+          peer = new Peer(room, peerOptions());
+          peer.on('open', () => { updateShareLink(room); ui.shareBox.hidden = false; setStatus(ui.cameraStatus, 'Cámara lista. Abre el enlace en la Mac.', 'good'); });
+          peer.on('connection', (connection) => {
+            if (activeData && activeData.open) { connection.on('open', () => connection.send({ type: 'busy' })); return; }
+            activeData = connection;
+            connection.on('open', () => {
+              activeCall = peer.call(connection.peer, stream, { metadata: { label: 'Vigía' } });
+              activeCall.on('close', () => { activeCall = null; setLive(false); setStatus(ui.cameraStatus, 'La Mac se desconectó. Esperando una nueva conexión.', 'warn'); });
+              activeCall.on('error', () => setStatus(ui.cameraStatus, 'No se pudo enviar el video. Revisa la red o configura TURN.', 'error'));
+              setLive(true); setStatus(ui.cameraStatus, 'Transmitiendo a una Mac.', 'good'); sendData({ type: 'ready' });
+            });
+            connection.on('data', (data) => { if (data?.type === 'disconnect') connection.close(); });
+            connection.on('close', () => { activeData = null; });
+          });
+          peer.on('error', (error) => { setStatus(ui.cameraStatus, error.type === 'unavailable-id' ? 'Ese enlace ya está activo en otro lugar. Recarga la página para crear uno nuevo.' : `Error de conexión: ${error.type}.`, 'error'); });
+        };
+        const startCamera = async () => {
+          if (!window.Peer) { setStatus(ui.cameraStatus, 'No se pudo cargar el componente de conexión. Comprueba tu Internet y vuelve a abrir la página.', 'error'); return; }
+          if (!navigator.mediaDevices?.getUserMedia) { setStatus(ui.cameraStatus, 'Este navegador no permite abrir la cámara. Usa Safari o Chrome moderno mediante HTTPS.', 'error'); return; }
+          $('startCamera').disabled = true; setStatus(ui.cameraStatus, 'Pidiendo permiso a la cámara…');
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, ...qualityConstraints() }, audio: $('includeAudio').checked ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false } : false });
+            showVideo(stream, true); announceCamera(randomRoom()); startMotionDetection(); $('stopCamera').disabled = false;
+          } catch (error) { setStatus(ui.cameraStatus, error.name === 'NotAllowedError' ? 'Permiso denegado. Autoriza cámara y micrófono en el navegador.' : `No pude abrir la cámara: ${error.message}`, 'error'); $('startCamera').disabled = false; }
+        };
+        const soundAlert = () => { try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); gain.gain.value = .035; osc.frequency.value = 740; osc.connect(gain).connect(ctx.destination); osc.start(); setTimeout(() => { osc.stop(); ctx.close(); }, 160); } catch {} };
+        const connectViewer = (room) => {
+          if (!room) return;
+          if (!window.Peer) { setStatus(ui.viewerStatus, 'No se pudo cargar el componente de conexión. Comprueba tu Internet y vuelve a abrir la página.', 'error'); return; }
+          showViewer(); $('pasteArea').hidden = true; $('toggleSound').disabled = false; $('fullScreen').disabled = false;
+          setStatus(ui.viewerStatus, 'Buscando la cámara…', 'warn');
+          peer = new Peer(peerOptions());
+          peer.on('open', () => {
+            activeData = peer.connect(room, { reliable: true });
+            const timeout = setTimeout(() => { if (!activeCall) setStatus(ui.viewerStatus, 'No encuentro la cámara. Revisa que el celular siga transmitiendo y que el enlace sea el actual.', 'error'); }, 15000);
+            activeData.on('open', () => setStatus(ui.viewerStatus, 'Conectando video…', 'warn'));
+            activeData.on('data', (data) => {
+              if (data?.type === 'ready') setStatus(ui.viewerStatus, 'Cámara encontrada. Recibiendo video…', 'good');
+              if (data?.type === 'busy') setStatus(ui.viewerStatus, 'Esta cámara ya está siendo vista en otra Mac.', 'error');
+              if (data?.type === 'motion') { ui.viewerMotion.hidden = false; ui.viewerMotionOutput.textContent = `Detectado a las ${new Date(data.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`; ui.viewerMotionOutput.classList.add('alert'); setLive(true, true); soundAlert(); setTimeout(() => { ui.viewerMotionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2300); }
+            });
+            activeData.on('close', () => { if (!activeCall) setStatus(ui.viewerStatus, 'La cámara se desconectó.', 'warn'); });
+            peer.on('call', (call) => { clearTimeout(timeout); activeCall = call; call.answer(); call.on('stream', (remoteStream) => { showVideo(remoteStream, !viewerAudioOn); setLive(true); setStatus(ui.viewerStatus, 'En directo · vídeo cifrado.', 'good'); }); call.on('close', () => { setLive(false); setStatus(ui.viewerStatus, 'La cámara dejó de transmitir.', 'warn'); }); call.on('error', () => setStatus(ui.viewerStatus, 'No se pudo recibir el video. Prueba que ambos dispositivos tengan buena red.', 'error')); });
+          });
+          peer.on('error', (error) => setStatus(ui.viewerStatus, `Error de conexión: ${error.type}.`, 'error'));
+        };
+        $('chooseCamera').addEventListener('click', showCamera);
+        $('chooseViewer').addEventListener('click', showViewer);
+        $('startCamera').addEventListener('click', startCamera);
+        $('stopCamera').addEventListener('click', () => { stopEverything(); $('startCamera').disabled = false; $('stopCamera').disabled = true; ui.shareBox.hidden = true; setStatus(ui.cameraStatus, 'Cámara detenida. El enlace anterior ya no transmite.', 'warn'); });
+        $('copyLink').addEventListener('click', async () => { try { await navigator.clipboard.writeText(ui.shareLink.value); $('copyLink').textContent = 'Copiado'; setTimeout(() => $('copyLink').textContent = 'Copiar', 1600); } catch { ui.shareLink.select(); document.execCommand('copy'); } });
+        $('openView').addEventListener('click', () => { try { const url = new URL($('viewLink').value.trim()); const room = url.searchParams.get('view') || new URLSearchParams(url.hash.slice(1)).get('view'); if (!room) throw new Error(); history.replaceState({}, '', url.href); connectViewer(room); } catch { setStatus(ui.viewerStatus, 'Ese enlace no parece válido.', 'error'); } });
+        $('toggleSound').addEventListener('click', () => { viewerAudioOn = !viewerAudioOn; ui.video.muted = !viewerAudioOn; $('toggleSound').textContent = viewerAudioOn ? 'Silenciar audio' : 'Activar audio'; });
+        $('fullScreen').addEventListener('click', () => ui.video.requestFullscreen?.());
+        window.addEventListener('beforeunload', stopEverything);
+        if (viewRoom) { showViewer(); ui.viewerIntro.textContent = 'Conectando de forma privada con la cámara…'; setTimeout(() => connectViewer(viewRoom), 80); }
+      })();
+    </script>
+  </body>
+</html>
