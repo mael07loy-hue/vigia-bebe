@@ -75,7 +75,12 @@
             <div id="pasteArea" class="form-row"><label for="viewLink">Enlace de la cámara</label><input id="viewLink" type="url" placeholder="https://…/#view=…"><button id="openView" class="primary" type="button">Conectar cámara</button></div>
             <div class="status warn" id="viewerStatus" role="status">Aún no hay una cámara conectada.</div>
             <div id="viewerMotion" class="motion" hidden><div class="motion-head"><strong>Movimiento</strong><span id="viewerMotionOutput" class="motion-output" aria-live="polite">Sin actividad</span></div></div>
-            <div class="viewer-actions"><button id="toggleSound" type="button" disabled>Activar audio</button><button id="fullScreen" type="button" disabled>Pantalla completa</button></div>
+            <div class="motion" id="audioControls" hidden>
+              <div class="motion-head"><strong>Audio de la cámara</strong><span id="audioLevel" class="motion-output">100%</span></div>
+              <div class="form-row"><label for="audioBoost">Amplificación de bocinas</label><input id="audioBoost" type="range" min="100" max="500" step="25" value="250"></div>
+              <p class="tiny">250% es un buen punto de partida. Bájalo si el audio se distorsiona.</p>
+            </div>
+            <div class="viewer-actions"><button id="toggleSound" type="button" disabled>Activar audio amplificado</button><button id="armAlert" type="button" disabled>Activar alerta sonora</button><button id="fullScreen" type="button" disabled>Pantalla completa</button></div>
           </div>
 
           <details class="advanced" id="turnSettings" hidden><summary>Conexiones móviles difíciles: configurar TURN</summary><p class="tiny">Para ver desde otra red con fiabilidad total, añade tu servidor TURN propio. Estos datos quedan sólo en este navegador y también se incluyen en el enlace de vista.</p><div class="form-row"><label for="turnUrl">URL TURN</label><input id="turnUrl" placeholder="turn:turn.tudominio.com:3478"></div><div class="form-row"><label for="turnUser">Usuario TURN</label><input id="turnUser" autocomplete="off"></div><div class="form-row"><label for="turnPass">Contraseña TURN</label><input id="turnPass" type="password" autocomplete="off"></div></details>
@@ -90,7 +95,7 @@
       (() => {
         const $ = (id) => document.getElementById(id);
         const ui = { video: $('video'), videoEmpty: $('videoEmpty'), livePill: $('livePill'), pillText: $('pillText'), chooser: $('chooser'), cameraPanel: $('cameraPanel'), viewerPanel: $('viewerPanel'), cameraStatus: $('cameraStatus'), viewerStatus: $('viewerStatus'), shareBox: $('shareBox'), shareLink: $('shareLink'), motionOutput: $('motionOutput'), viewerMotion: $('viewerMotion'), viewerMotionOutput: $('viewerMotionOutput'), turnSettings: $('turnSettings') };
-        let peer, stream, activeCall, activeData, motionTimer, lastFrame, motionCooldown = 0, viewerAudioOn = false;
+        let peer, stream, activeCall, activeData, motionTimer, lastFrame, motionCooldown = 0, viewerAudioOn = false, remoteAudioStream, audioContext, audioGain, alertArmed = false;
         const params = new URLSearchParams(location.search);
         const hashParams = new URLSearchParams(location.hash.slice(1));
         const viewRoom = params.get('view') || hashParams.get('view');
@@ -176,11 +181,42 @@
             showVideo(stream, true); announceCamera(randomRoom()); startMotionDetection(); $('stopCamera').disabled = false;
           } catch (error) { setStatus(ui.cameraStatus, error.name === 'NotAllowedError' ? 'Permiso denegado. Autoriza cámara y micrófono en el navegador.' : `No pude abrir la cámara: ${error.message}`, 'error'); $('startCamera').disabled = false; }
         };
-        const soundAlert = () => { try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); gain.gain.value = .035; osc.frequency.value = 740; osc.connect(gain).connect(ctx.destination); osc.start(); setTimeout(() => { osc.stop(); ctx.close(); }, 160); } catch {} };
+        const audioBoostValue = () => Number($('audioBoost').value) / 100;
+        const showAudioLevel = () => { $('audioLevel').textContent = `${$('audioBoost').value}%`; if (audioGain) audioGain.gain.setTargetAtTime(audioBoostValue(), audioContext.currentTime, .04); };
+        const ensureAudioContext = async () => {
+          if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          await audioContext.resume();
+          return audioContext.state === 'running';
+        };
+        const ensureAudioPipeline = async () => {
+          if (!remoteAudioStream?.getAudioTracks().length) return false;
+          if (!(await ensureAudioContext())) return false;
+          if (!audioGain) {
+            const source = audioContext.createMediaStreamSource(remoteAudioStream);
+            audioGain = audioContext.createGain();
+            const compressor = audioContext.createDynamicsCompressor();
+            compressor.threshold.value = -24; compressor.knee.value = 26; compressor.ratio.value = 10; compressor.attack.value = .003; compressor.release.value = .22;
+            source.connect(audioGain).connect(compressor).connect(audioContext.destination);
+          }
+          audioGain.gain.setValueAtTime(audioBoostValue(), audioContext.currentTime);
+          return true;
+        };
+        const soundAlert = () => {
+          if (!alertArmed || !audioContext || audioContext.state !== 'running') return;
+          const now = audioContext.currentTime;
+          [0, .26, .52].forEach((start, index) => {
+            const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
+            oscillator.type = 'square'; oscillator.frequency.setValueAtTime(index === 1 ? 660 : 920, now + start);
+            gain.gain.setValueAtTime(0.0001, now + start); gain.gain.exponentialRampToValueAtTime(.34, now + start + .015); gain.gain.exponentialRampToValueAtTime(.0001, now + start + .20);
+            oscillator.connect(gain).connect(audioContext.destination); oscillator.start(now + start); oscillator.stop(now + start + .22);
+          });
+        };
         const connectViewer = (room) => {
           if (!room) return;
           if (!window.Peer) { setStatus(ui.viewerStatus, 'No se pudo cargar el componente de conexión. Comprueba tu Internet y vuelve a abrir la página.', 'error'); return; }
-          showViewer(); $('pasteArea').hidden = true; $('toggleSound').disabled = false; $('fullScreen').disabled = false;
+          showViewer(); $('pasteArea').hidden = true; $('toggleSound').disabled = false; $('armAlert').disabled = false; $('fullScreen').disabled = false;
           setStatus(ui.viewerStatus, 'Buscando la cámara…', 'warn');
           peer = new Peer(peerOptions());
           peer.on('open', () => {
@@ -193,7 +229,7 @@
               if (data?.type === 'motion') { ui.viewerMotion.hidden = false; ui.viewerMotionOutput.textContent = `Detectado a las ${new Date(data.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`; ui.viewerMotionOutput.classList.add('alert'); setLive(true, true); soundAlert(); setTimeout(() => { ui.viewerMotionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2300); }
             });
             activeData.on('close', () => { if (!activeCall) setStatus(ui.viewerStatus, 'La cámara se desconectó.', 'warn'); });
-            peer.on('call', (call) => { clearTimeout(timeout); activeCall = call; call.answer(); call.on('stream', (remoteStream) => { showVideo(remoteStream, !viewerAudioOn); setLive(true); setStatus(ui.viewerStatus, 'En directo · vídeo cifrado.', 'good'); }); call.on('close', () => { setLive(false); setStatus(ui.viewerStatus, 'La cámara dejó de transmitir.', 'warn'); }); call.on('error', () => setStatus(ui.viewerStatus, 'No se pudo recibir el video. Prueba que ambos dispositivos tengan buena red.', 'error')); });
+            peer.on('call', (call) => { clearTimeout(timeout); activeCall = call; call.answer(); call.on('stream', (remoteStream) => { remoteAudioStream = remoteStream; showVideo(remoteStream, true); $('audioControls').hidden = !remoteStream.getAudioTracks().length; setLive(true); setStatus(ui.viewerStatus, 'En directo · vídeo cifrado.', 'good'); }); call.on('close', () => { setLive(false); setStatus(ui.viewerStatus, 'La cámara dejó de transmitir.', 'warn'); }); call.on('error', () => setStatus(ui.viewerStatus, 'No se pudo recibir el video. Prueba que ambos dispositivos tengan buena red.', 'error')); });
           });
           peer.on('error', (error) => setStatus(ui.viewerStatus, `Error de conexión: ${error.type}.`, 'error'));
         };
@@ -203,7 +239,18 @@
         $('stopCamera').addEventListener('click', () => { stopEverything(); $('startCamera').disabled = false; $('stopCamera').disabled = true; ui.shareBox.hidden = true; setStatus(ui.cameraStatus, 'Cámara detenida. El enlace anterior ya no transmite.', 'warn'); });
         $('copyLink').addEventListener('click', async () => { try { await navigator.clipboard.writeText(ui.shareLink.value); $('copyLink').textContent = 'Copiado'; setTimeout(() => $('copyLink').textContent = 'Copiar', 1600); } catch { ui.shareLink.select(); document.execCommand('copy'); } });
         $('openView').addEventListener('click', () => { try { const url = new URL($('viewLink').value.trim()); const room = url.searchParams.get('view') || new URLSearchParams(url.hash.slice(1)).get('view'); if (!room) throw new Error(); history.replaceState({}, '', url.href); connectViewer(room); } catch { setStatus(ui.viewerStatus, 'Ese enlace no parece válido.', 'error'); } });
-        $('toggleSound').addEventListener('click', () => { viewerAudioOn = !viewerAudioOn; ui.video.muted = !viewerAudioOn; $('toggleSound').textContent = viewerAudioOn ? 'Silenciar audio' : 'Activar audio'; });
+        $('audioBoost').addEventListener('input', showAudioLevel);
+        $('toggleSound').addEventListener('click', async () => {
+          if (viewerAudioOn) { audioContext?.suspend(); viewerAudioOn = false; $('toggleSound').textContent = 'Activar audio amplificado'; return; }
+          const started = await ensureAudioPipeline();
+          if (!started) { setStatus(ui.viewerStatus, 'La cámara aún no está enviando audio. Revisa que “Incluir audio ambiental” esté activado en el celular.', 'warn'); return; }
+          viewerAudioOn = true; $('toggleSound').textContent = 'Silenciar audio';
+        });
+        $('armAlert').addEventListener('click', async () => {
+          const started = await ensureAudioContext();
+          if (!started) { setStatus(ui.viewerStatus, 'Activa el audio de la cámara antes de armar la alerta.', 'warn'); return; }
+          alertArmed = !alertArmed; $('armAlert').textContent = alertArmed ? 'Desactivar alerta sonora' : 'Activar alerta sonora'; if (alertArmed) soundAlert();
+        });
         $('fullScreen').addEventListener('click', () => ui.video.requestFullscreen?.());
         window.addEventListener('beforeunload', stopEverything);
         if (viewRoom) { showViewer(); ui.viewerIntro.textContent = 'Conectando de forma privada con la cámara…'; setTimeout(() => connectViewer(viewRoom), 80); }

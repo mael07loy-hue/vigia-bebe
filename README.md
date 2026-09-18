@@ -10,6 +10,8 @@ Una cámara temporal de celular a Mac mediante WebRTC: el vídeo se transmite ci
 
 Para la mejor calidad práctica, el modo 1080p a 30 fps es el predeterminado. Deja el celular conectado, no bloquees la pantalla y usa una buena red Wi-Fi. El modo “Máxima compatible” intenta 4K, pero puede calentar el celular y consumir mucha batería.
 
+En la Mac, pulsa **Activar audio amplificado** cuando entre el vídeo y ajusta “Amplificación de bocinas” (100–500%). Después pulsa **Activar alerta sonora**: el navegador necesita ese clic inicial para permitir que la alarma fuerte suene cuando se detecte movimiento. El amplificador no puede vencer el límite de volumen físico de macOS ni de las bocinas; también sube el volumen del sistema y evita 500% si escuchas distorsión.
+
 ## Privacidad y alcance
 
 - El audio y video usan WebRTC (DTLS-SRTP), cifrado durante el transporte entre los navegadores. La página no guarda grabaciones ni envía fotogramas a un servidor de aplicación.
