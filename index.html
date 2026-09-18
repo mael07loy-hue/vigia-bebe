@@ -9,6 +9,7 @@
     <style>
       :root { color-scheme: dark; --ink:#edf5f1; --muted:#a8bbb3; --canvas:#101917; --surface:#172521; --line:#2d423b; --good:#74e2ae; --warn:#ffd27d; --danger:#ff8a8a; --accent:#9be6c2; }
       * { box-sizing:border-box; }
+      [hidden] { display:none !important; }
       body { margin:0; min-height:100vh; background:radial-gradient(circle at 20% -5%, #24483d 0, transparent 34rem), var(--canvas); color:var(--ink); font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
       main { width:min(100%, 1100px); margin:auto; padding:clamp(18px,4vw,42px); }
       header { display:flex; gap:18px; align-items:center; justify-content:space-between; margin-bottom:30px; }
@@ -22,15 +23,23 @@
       .video-empty { padding:28px; text-align:center; color:var(--muted); }
       .video-empty strong { display:block; color:var(--ink); font-size:19px; margin-bottom:7px; }
       .pill { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:7px; padding:6px 9px; border-radius:999px; background:#13231eD9; border:1px solid #38584c; font-size:12px; font-weight:600; }
-      .pill.visible { display:flex; }.dot { width:8px;height:8px;border-radius:50%;background:var(--good); }.pill.alert .dot{ background:var(--danger); box-shadow:0 0 0 4px #ff8a8a2b; }
+      .pill.visible { display:flex; }.dot { width:8px;height:8px;border-radius:50%;background:var(--good); }.pill.alert { border-color:#7d3a3a; background:#2a1414D9; color:#ffd7d7; }.pill.alert .dot{ background:var(--danger); box-shadow:0 0 0 4px #ff8a8a2b; }
       .panel { padding:22px; }
       h1,h2,p { margin-top:0; } h1 { font-size:clamp(24px,4vw,34px); line-height:1.12; margin-bottom:9px; } h2 { font-size:18px; margin-bottom:6px; }.lede,.muted { color:var(--muted); }
       .role-choice { display:grid; gap:12px; margin-top:20px; }.role { width:100%; text-align:left; display:flex; align-items:center; gap:13px; border:1px solid var(--line); color:var(--ink); background:#1a2b26; border-radius:14px; padding:15px; cursor:pointer; font:inherit; }.role:hover { border-color:#568d78; }.role-icon { font-size:24px; }.role small { color:var(--muted); display:block; margin-top:2px; }
-      .form-row { display:grid; gap:7px; margin:15px 0; }.form-row label { font-size:14px; font-weight:600; }.controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; } button,select,input { font:inherit; } button { border:0; border-radius:11px; padding:11px 14px; cursor:pointer; font-weight:650; background:#29473d; color:var(--ink); } button.primary { background:var(--accent); color:#10261e; } button.danger { background:#512b2b; color:#ffe7e7; } button:disabled { opacity:.55; cursor:not-allowed; } select,input[type="range"] { width:100%; min-height:42px; border:1px solid var(--line); border-radius:10px; padding:0 10px; color:var(--ink); background:#11201b; } input[type="range"] { padding:0; accent-color:var(--accent); } .check { display:flex; gap:9px; align-items:center; cursor:pointer; color:var(--muted); font-size:14px; }.check input { width:18px; height:18px; accent-color:var(--accent); }
+      .form-row { display:grid; gap:7px; margin:15px 0; }.form-row label { font-size:14px; font-weight:600; }.controls { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; } button,select,input { font:inherit; } button { border:0; border-radius:11px; padding:11px 14px; cursor:pointer; font-weight:650; background:#29473d; color:var(--ink); } button.primary { background:var(--accent); color:#10261e; } button.danger { background:#512b2b; color:#ffe7e7; } button:disabled { opacity:.55; cursor:not-allowed; } select,input[type="range"] { width:100%; min-height:42px; border:1px solid var(--line); border-radius:10px; padding:0 10px; color:var(--ink); background:#11201b; } input[type="range"] { padding:0; accent-color:var(--accent); } .check { display:flex; gap:9px; align-items:center; cursor:pointer; color:var(--muted); font-size:14px; margin:9px 0; }.check input { width:18px; height:18px; flex:none; accent-color:var(--accent); }
       .status { display:flex; gap:9px; align-items:flex-start; margin:16px 0 0; border-left:3px solid var(--line); padding:8px 11px; font-size:14px; color:var(--muted); }.status.good { border-color:var(--good); color:#d2eee0; }.status.warn { border-color:var(--warn); color:#f4e2b5; }.status.error { border-color:var(--danger); color:#ffd0d0; }
-      .share { margin-top:18px; padding:13px; border-radius:13px; border:1px solid #386453; background:#11241d; }.share[hidden], .advanced[hidden] { display:none; }.share label { display:block; color:var(--good); font-size:13px; font-weight:650; margin-bottom:7px; }.share-line { display:flex; gap:8px; }.share input { min-width:0; font-size:12px; }.tiny { font-size:12px; color:var(--muted); margin:8px 0 0; }.motion { margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }.motion-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }.motion-output { font-size:13px; color:var(--muted); }.motion-output.alert { color:var(--danger); font-weight:650; }.info { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }.info strong { color:var(--ink); }.viewer-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:15px; }
+      .share { margin-top:18px; padding:13px; border-radius:13px; border:1px solid #386453; background:#11241d; }.share label { display:block; color:var(--good); font-size:13px; font-weight:650; margin-bottom:7px; }.share-line { display:flex; gap:8px; }.share input { min-width:0; font-size:12px; }.tiny { font-size:12px; color:var(--muted); margin:8px 0 0; }
+      .block { margin-top:16px; padding-top:15px; border-top:1px solid var(--line); }.block-head { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:15px; }.block-note { font-size:13px; color:var(--muted); }.block-note.alert { color:var(--danger); font-weight:650; }
+      .meter { height:9px; margin-top:10px; border-radius:999px; background:#0d1714; border:1px solid var(--line); overflow:hidden; }.meter i { display:block; height:100%; width:0; background:linear-gradient(90deg,#4bbf8c,#74e2ae 45%,#ffd27d 78%,#ff8a8a); transition:width .07s linear; }
+      .field-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }.field-head span { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+      .row2 { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }.row2 button { flex:1 1 auto; }
+      .talk-btn { width:100%; margin-top:10px; padding:15px; font-size:16px; }.talk-btn.talking { background:#8f3b3b; color:#fff; box-shadow:0 0 0 4px #ff8a8a26; }
+      .banner { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding:12px 14px; border-radius:13px; border:1px solid #7d3a3a; background:#2b1515; color:#ffd7d7; font-weight:650; font-size:14px; }.banner button { background:#61302f; color:#ffe7e7; padding:8px 12px; }
+      .log { list-style:none; margin:12px 0 0; padding:0; font-size:12px; color:var(--muted); }.log li { display:flex; justify-content:space-between; gap:10px; padding:4px 0; border-bottom:1px dashed #24382f; }.log li span:last-child { font-variant-numeric:tabular-nums; }
+      .info { margin-top:20px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }.info strong { color:var(--ink); }.viewer-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
       .advanced { margin-top:12px; padding:13px; border:1px dashed #46685c; border-radius:12px; }.advanced summary { cursor:pointer; color:var(--muted); font-size:13px; }.advanced .form-row { margin-bottom:0; }.advanced input { font-size:13px; }
-      canvas { display:none; }
+      canvas, audio { display:none; }
       @media (max-width:780px) { main{padding:18px 14px 32px}.screen{grid-template-columns:1fr}.viewer{min-height:230px;aspect-ratio:16/10}header{margin-bottom:21px}.privacy{display:none}.panel{padding:18px} }
     </style>
   </head>
@@ -65,7 +74,19 @@
             <label class="check"><input id="includeAudio" type="checkbox" checked> Incluir audio ambiental</label>
             <div class="controls"><button id="startCamera" class="primary" type="button">Iniciar cámara</button><button id="stopCamera" class="danger" type="button" disabled>Detener</button></div>
             <div id="shareBox" class="share" hidden><label for="shareLink">Enlace privado para abrir en la Mac</label><div class="share-line"><input id="shareLink" readonly aria-label="Enlace privado"><button id="copyLink" type="button">Copiar</button></div><p class="tiny">Quien tenga este enlace puede ver la cámara. No lo compartas; recarga esta página para crear uno nuevo.</p></div>
-            <div class="motion"><div class="motion-head"><label class="check"><input id="motionEnabled" type="checkbox" checked> Detectar movimiento</label><span id="motionOutput" class="motion-output" aria-live="polite">En espera</span></div><div class="form-row"><label for="sensitivity">Sensibilidad</label><input id="sensitivity" type="range" min="5" max="60" value="22"></div></div>
+
+            <div class="block">
+              <div class="block-head"><strong>Micrófono</strong><span id="micLevelText" class="block-note">en espera</span></div>
+              <div class="meter"><i id="micMeter"></i></div>
+              <div class="form-row"><div class="field-head"><label for="micBoost">Sensibilidad del micrófono</label><span id="micBoostText">300%</span></div><input id="micBoost" type="range" min="100" max="600" step="25" value="300"></div>
+              <p class="tiny">Amplifica el sonido <em>antes</em> de enviarlo. Es lo que más ayuda cuando en la Mac se escucha muy bajo. Si oyes ruido de fondo o saturación, bájalo.</p>
+              <p class="tiny" id="talkbackState">Voz desde la Mac: en espera.</p>
+            </div>
+
+            <div class="block">
+              <div class="block-head"><label class="check" style="margin:0"><input id="motionEnabled" type="checkbox" checked> Detectar movimiento</label><span id="motionOutput" class="block-note" aria-live="polite">En espera</span></div>
+              <div class="form-row"><div class="field-head"><label for="sensitivity">Sensibilidad</label><span id="sensitivityText">22</span></div><input id="sensitivity" type="range" min="5" max="60" value="22"></div>
+            </div>
             <div class="status" id="cameraStatus" role="status">Listo para pedir permiso a la cámara.</div>
           </div>
 
@@ -74,13 +95,36 @@
             <p class="lede" id="viewerIntro">Abre el enlace privado que generó el celular.</p>
             <div id="pasteArea" class="form-row"><label for="viewLink">Enlace de la cámara</label><input id="viewLink" type="url" placeholder="https://…/#view=…"><button id="openView" class="primary" type="button">Conectar cámara</button></div>
             <div class="status warn" id="viewerStatus" role="status">Aún no hay una cámara conectada.</div>
-            <div id="viewerMotion" class="motion" hidden><div class="motion-head"><strong>Movimiento</strong><span id="viewerMotionOutput" class="motion-output" aria-live="polite">Sin actividad</span></div></div>
-            <div class="motion" id="audioControls" hidden>
-              <div class="motion-head"><strong>Audio de la cámara</strong><span id="audioLevel" class="motion-output">100%</span></div>
-              <div class="form-row"><label for="audioBoost">Amplificación de bocinas</label><input id="audioBoost" type="range" min="100" max="500" step="25" value="250"></div>
-              <p class="tiny">250% es un buen punto de partida. Bájalo si el audio se distorsiona.</p>
+
+            <div id="alarmBanner" class="banner" hidden><span id="alarmBannerText">Movimiento detectado</span><button id="stopAlarmTop" type="button">Silenciar</button></div>
+
+            <div class="block" id="audioControls" hidden>
+              <div class="block-head"><strong>Sonido de la habitación</strong><span id="audioState" class="block-note">apagado</span></div>
+              <div class="meter"><i id="audioMeter"></i></div>
+              <div class="form-row"><div class="field-head"><label for="audioBoost">Volumen</label><span id="audioBoostText">250%</span></div><input id="audioBoost" type="range" min="0" max="500" step="10" value="250"></div>
+              <label class="check"><input id="audioCompress" type="checkbox" checked> Realzar sonidos suaves (compresor + limitador)</label>
+              <div class="row2"><button id="toggleSound" class="primary" type="button">Activar sonido</button></div>
+              <p class="tiny">Hasta 500%. La barra se mueve cuando llega sonido aunque esté silenciado: si no se mueve, el problema está en el micrófono del celular.</p>
             </div>
-            <div class="viewer-actions"><button id="toggleSound" type="button" disabled>Activar audio amplificado</button><button id="armAlert" type="button" disabled>Activar alerta sonora</button><button id="fullScreen" type="button" disabled>Pantalla completa</button></div>
+
+            <div class="block" id="talkBlock" hidden>
+              <div class="block-head"><strong>Hablar al bebé</strong><span id="talkState" class="block-note">micrófono apagado</span></div>
+              <button id="talkButton" class="talk-btn" type="button">🎙️ Hablar</button>
+              <p class="tiny">Tu voz sale por la bocina del celular. Mantén pulsada la <strong>barra espaciadora</strong> para hablar sólo mientras la sostienes. Mientras hablas se silencian los dos micrófonos para evitar acoples.</p>
+            </div>
+
+            <div class="block" id="alarmBlock">
+              <div class="block-head"><strong>Alarma de movimiento</strong><span id="viewerMotionOutput" class="block-note" aria-live="polite">Sin actividad</span></div>
+              <label class="check"><input id="autoAlert" type="checkbox" checked> Avisarme automáticamente al detectar movimiento</label>
+              <label class="check"><input id="alarmRepeat" type="checkbox" checked> Repetir la alarma hasta que la silencie</label>
+              <label class="check"><input id="notifyOs" type="checkbox"> Mostrar también una notificación de macOS</label>
+              <div class="form-row"><div class="field-head"><label for="alarmVolume">Volumen de la alarma</label><span id="alarmVolumeText">80%</span></div><input id="alarmVolume" type="range" min="10" max="100" step="5" value="80"></div>
+              <div class="row2"><button id="testAlarm" class="primary" type="button">Probar alarma</button><button id="stopAlarm" type="button" disabled>Silenciar</button></div>
+              <p class="tiny" id="alarmHint">Pulsa <strong>Probar alarma</strong> una vez: el navegador necesita ese primer clic para poder sonar solo más tarde.</p>
+              <ul class="log" id="motionLog"></ul>
+            </div>
+
+            <div class="viewer-actions"><button id="fullScreen" type="button" disabled>Pantalla completa</button><button id="reconnect" type="button" disabled>Reconectar</button></div>
           </div>
 
           <details class="advanced" id="turnSettings" hidden><summary>Conexiones móviles difíciles: configurar TURN</summary><p class="tiny">Para ver desde otra red con fiabilidad total, añade tu servidor TURN propio. Estos datos quedan sólo en este navegador y también se incluyen en el enlace de vista.</p><div class="form-row"><label for="turnUrl">URL TURN</label><input id="turnUrl" placeholder="turn:turn.tudominio.com:3478"></div><div class="form-row"><label for="turnUser">Usuario TURN</label><input id="turnUser" autocomplete="off"></div><div class="form-row"><label for="turnPass">Contraseña TURN</label><input id="turnPass" type="password" autocomplete="off"></div></details>
@@ -90,18 +134,37 @@
       </div>
     </main>
     <canvas id="motionCanvas" width="128" height="72" aria-hidden="true"></canvas>
+    <audio id="talkAudio" autoplay playsinline></audio>
 
     <script>
       (() => {
         const $ = (id) => document.getElementById(id);
-        const ui = { video: $('video'), videoEmpty: $('videoEmpty'), livePill: $('livePill'), pillText: $('pillText'), chooser: $('chooser'), cameraPanel: $('cameraPanel'), viewerPanel: $('viewerPanel'), cameraStatus: $('cameraStatus'), viewerStatus: $('viewerStatus'), shareBox: $('shareBox'), shareLink: $('shareLink'), motionOutput: $('motionOutput'), viewerMotion: $('viewerMotion'), viewerMotionOutput: $('viewerMotionOutput'), turnSettings: $('turnSettings') };
-        let peer, stream, activeCall, activeData, motionTimer, lastFrame, motionCooldown = 0, viewerAudioOn = false, remoteAudioStream, audioContext, audioGain, alertArmed = false;
+        const ui = {
+          video: $('video'), videoEmpty: $('videoEmpty'), livePill: $('livePill'), pillText: $('pillText'),
+          chooser: $('chooser'), cameraPanel: $('cameraPanel'), viewerPanel: $('viewerPanel'), viewerIntro: $('viewerIntro'),
+          cameraStatus: $('cameraStatus'), viewerStatus: $('viewerStatus'), shareBox: $('shareBox'), shareLink: $('shareLink'),
+          motionOutput: $('motionOutput'), viewerMotionOutput: $('viewerMotionOutput'), turnSettings: $('turnSettings'), talkAudio: $('talkAudio')
+        };
+        let peer, rawStream, outgoingStream, activeCall, activeData, motionTimer, lastFrame, motionCooldown = 0, wakeLock = null;
+        let camAudio = null, talkIncoming = null;
+        let remoteStream = null, viewerRoom = null, talkCall = null, talkStream = null, talking = false;
+        let ringing = false, ringTimer = null, ringStopTimer = null, titleTimer = null, alarmSeq = 0;
+        const baseTitle = document.title;
+        const mon = { ctx: null, src: null, pre: null, comp: null, compOut: null, bypass: null, master: null, analyser: null, data: null, alarm: null, on: false, meterOn: false };
+
         const params = new URLSearchParams(location.search);
         const hashParams = new URLSearchParams(location.hash.slice(1));
         const viewRoom = params.get('view') || hashParams.get('view');
+        const clock = (at) => new Date(at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         const setStatus = (node, text, kind = '') => { node.textContent = text; node.className = `status ${kind}`; };
         const setLive = (visible, alert = false) => { ui.livePill.classList.toggle('visible', visible); ui.livePill.classList.toggle('alert', alert); ui.pillText.textContent = alert ? 'MOVIMIENTO' : 'EN DIRECTO'; };
         const randomRoom = () => `vigia-${crypto.getRandomValues(new Uint32Array(4)).join('-')}`;
+        const sendData = (event) => { try { if (activeData && activeData.open) activeData.send(event); } catch {} };
+
+        const readTurn = () => { const urls = $('turnUrl').value.trim(); if (!urls) return null; return { urls, username: $('turnUser').value.trim(), credential: $('turnPass').value }; };
+        const turnFromHash = () => { try { const found = new URLSearchParams(location.hash.slice(1)).get('turn'); return found ? JSON.parse(atob(decodeURIComponent(found))) : null; } catch { return null; } };
+        const iceConfig = () => { const config = [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }]; const turn = readTurn() || turnFromHash(); if (turn) config.push(turn); return { iceServers: config } };
+        const peerOptions = () => ({ config: iceConfig(), debug: 1 });
         const updateShareLink = (room) => {
           const url = new URL(location.href); url.search = ''; url.hash = '';
           const turn = readTurn();
@@ -110,20 +173,80 @@
           url.hash = privateLink.toString();
           ui.shareLink.value = url.href;
         };
-        const readTurn = () => { const urls = $('turnUrl').value.trim(); if (!urls) return null; return { urls, username: $('turnUser').value.trim(), credential: $('turnPass').value }; };
-        const turnFromHash = () => { try { const found = new URLSearchParams(location.hash.slice(1)).get('turn'); return found ? JSON.parse(atob(decodeURIComponent(found))) : null; } catch { return null; } };
-        const iceConfig = () => { const config = [{ urls: 'stun:stun.l.google.com:19302' }]; const turn = readTurn() || turnFromHash(); if (turn) config.push(turn); return { iceServers: config }; };
-        const peerOptions = () => ({ config: iceConfig(), debug: 1 });
+
+        // Opus a buena calidad: más bitrate, sin recorte por silencio (DTX) para no cortar sonidos suaves.
+        const sdpTransform = (sdp) => {
+          try { return sdp.replace(/a=fmtp:(\d+) ([^\r\n]*useinbandfec=1[^\r\n]*)/g, (all, pt, rest) => `a=fmtp:${pt} ${rest};maxaveragebitrate=128000;stereo=0;usedtx=0`); } catch { return sdp; }
+        };
+        const boostAudioSender = (call) => setTimeout(() => {
+          try {
+            (call.peerConnection?.getSenders() || []).filter((s) => s.track && s.track.kind === 'audio').forEach((sender) => {
+              const settings = sender.getParameters();
+              if (!settings.encodings || !settings.encodings.length) settings.encodings = [{}];
+              settings.encodings[0].maxBitrate = 128000; settings.encodings[0].priority = 'high'; settings.encodings[0].networkPriority = 'high';
+              sender.setParameters(settings).catch(() => {});
+            });
+          } catch {}
+        }, 900);
+
+        const softLimiter = (ctx) => {
+          const shaper = ctx.createWaveShaper(), size = 2048, curve = new Float32Array(size);
+          for (let i = 0; i < size; i++) { const x = (i / (size - 1)) * 2 - 1; curve[i] = Math.tanh(x * 1.7) / Math.tanh(1.7); }
+          shaper.curve = curve; shaper.oversample = '2x'; return shaper;
+        };
+        const levelOf = (analyser, data) => {
+          analyser.getByteTimeDomainData(data);
+          let sum = 0;
+          for (let i = 0; i < data.length; i++) { const v = (data[i] - 128) / 128; sum += v * v; }
+          return Math.sqrt(sum / data.length);
+        };
+        const paintMeter = (bar, level) => { bar.style.width = `${Math.min(100, Math.round(level * 260))}%`; };
+
         const showCamera = () => { ui.chooser.hidden = true; ui.cameraPanel.hidden = false; ui.viewerPanel.hidden = true; ui.turnSettings.hidden = false; };
         const showViewer = () => { ui.chooser.hidden = true; ui.cameraPanel.hidden = true; ui.viewerPanel.hidden = false; ui.turnSettings.hidden = true; };
         const showVideo = (media, muted) => { ui.video.srcObject = media; ui.video.muted = muted; ui.videoEmpty.hidden = true; ui.video.play().catch(() => {}); };
-        const stopEverything = () => {
-          clearInterval(motionTimer); motionTimer = null; lastFrame = null;
-          if (activeCall) { activeCall.close(); activeCall = null; }
-          if (activeData) { activeData.close(); activeData = null; }
-          if (peer) { peer.destroy(); peer = null; }
-          if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; }
-          ui.video.srcObject = null; ui.videoEmpty.hidden = false; setLive(false);
+        const keepAwake = async () => { try { if (!wakeLock && navigator.wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch {} };
+
+        /* ---------- celular: cámara + micrófono amplificado ---------- */
+
+        const micBoostValue = () => Number($('micBoost').value) / 100;
+        const micMeterLoop = () => {
+          if (!camAudio) return;
+          paintMeter($('micMeter'), levelOf(camAudio.analyser, camAudio.data));
+          requestAnimationFrame(micMeterLoop);
+        };
+        const setCameraMicMuted = (muted) => {
+          if (camAudio) camAudio.gain.gain.setTargetAtTime(muted ? 0.0001 : micBoostValue(), camAudio.ctx.currentTime, 0.02);
+          else rawStream?.getAudioTracks().forEach((track) => { track.enabled = !muted; });
+          $('micLevelText').textContent = muted ? 'en pausa (hablando la Mac)' : 'enviando';
+        };
+        const buildOutgoingStream = async (raw) => {
+          const track = raw.getAudioTracks()[0];
+          if (!track) return raw;
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            await ctx.resume();
+            if (ctx.state !== 'running') throw new Error('audio suspendido');
+            const source = ctx.createMediaStreamSource(new MediaStream([track]));
+            const highpass = ctx.createBiquadFilter(); highpass.type = 'highpass'; highpass.frequency.value = 90;
+            const gain = ctx.createGain(); gain.gain.value = micBoostValue();
+            const compressor = ctx.createDynamicsCompressor();
+            compressor.threshold.value = -32; compressor.knee.value = 28; compressor.ratio.value = 6; compressor.attack.value = 0.005; compressor.release.value = 0.25;
+            const limiter = softLimiter(ctx);
+            const analyser = ctx.createAnalyser(); analyser.fftSize = 512;
+            const destination = ctx.createMediaStreamDestination();
+            source.connect(highpass); highpass.connect(gain); gain.connect(compressor); compressor.connect(limiter);
+            limiter.connect(destination); limiter.connect(analyser);
+            const processed = destination.stream.getAudioTracks()[0];
+            if (!processed) throw new Error('sin pista procesada');
+            camAudio = { ctx, gain, analyser, data: new Uint8Array(analyser.fftSize) };
+            $('micLevelText').textContent = 'enviando';
+            micMeterLoop();
+            return new MediaStream([...raw.getVideoTracks(), processed]);
+          } catch {
+            $('micLevelText').textContent = 'sin amplificar';
+            return raw;
+          }
         };
         const qualityConstraints = () => {
           const option = $('quality').value;
@@ -131,12 +254,11 @@
           if (option === 'saver') return { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 24, max: 24 } };
           return { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } };
         };
-        const sendData = (event) => { if (activeData && activeData.open) activeData.send(event); };
         const startMotionDetection = () => {
           clearInterval(motionTimer); lastFrame = null;
           const canvas = $('motionCanvas'), context = canvas.getContext('2d', { willReadFrequently: true });
           motionTimer = setInterval(() => {
-            if (!stream || !$('motionEnabled').checked || ui.video.readyState < 2) return;
+            if (!outgoingStream || !$('motionEnabled').checked || ui.video.readyState < 2) return;
             context.drawImage(ui.video, 0, 0, canvas.width, canvas.height);
             const frame = context.getImageData(0, 0, canvas.width, canvas.height).data;
             if (!lastFrame) { lastFrame = frame; return; }
@@ -146,14 +268,20 @@
               if (delta > 75) changes++;
             }
             lastFrame = frame;
-            const percent = changes / (frame.length / 16) * 100;
-            const moved = percent >= Number($('sensitivity').value) / 10;
-            if (moved && Date.now() > motionCooldown) {
+            const percent = (changes / (frame.length / 16)) * 100;
+            if (percent >= Number($('sensitivity').value) / 10 && Date.now() > motionCooldown) {
               motionCooldown = Date.now() + 6000;
-              ui.motionOutput.textContent = 'Movimiento detectado'; ui.motionOutput.classList.add('alert'); setLive(true, true); sendData({ type: 'motion', at: Date.now(), level: percent.toFixed(1) });
+              ui.motionOutput.textContent = 'Movimiento detectado'; ui.motionOutput.classList.add('alert'); setLive(true, true);
+              sendData({ type: 'motion', at: Date.now(), level: percent.toFixed(1) });
               setTimeout(() => { ui.motionOutput.textContent = 'Vigilando'; ui.motionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2200);
             }
           }, 360);
+        };
+        const playTalkback = (stream) => {
+          talkIncoming = stream;
+          ui.talkAudio.srcObject = stream; ui.talkAudio.volume = 1;
+          ui.talkAudio.play().catch(() => { $('talkbackState').textContent = 'Voz desde la Mac: toca la pantalla del celular para permitir el sonido.'; });
+          $('talkbackState').textContent = 'Voz desde la Mac: conectada. Sube el volumen del celular.';
         };
         const announceCamera = (room) => {
           peer = new Peer(room, peerOptions());
@@ -162,13 +290,24 @@
             if (activeData && activeData.open) { connection.on('open', () => connection.send({ type: 'busy' })); return; }
             activeData = connection;
             connection.on('open', () => {
-              activeCall = peer.call(connection.peer, stream, { metadata: { label: 'Vigía' } });
+              activeCall = peer.call(connection.peer, outgoingStream, { metadata: { label: 'Vigía' }, sdpTransform });
+              boostAudioSender(activeCall);
               activeCall.on('close', () => { activeCall = null; setLive(false); setStatus(ui.cameraStatus, 'La Mac se desconectó. Esperando una nueva conexión.', 'warn'); });
               activeCall.on('error', () => setStatus(ui.cameraStatus, 'No se pudo enviar el video. Revisa la red o configura TURN.', 'error'));
               setLive(true); setStatus(ui.cameraStatus, 'Transmitiendo a una Mac.', 'good'); sendData({ type: 'ready' });
             });
-            connection.on('data', (data) => { if (data?.type === 'disconnect') connection.close(); });
-            connection.on('close', () => { activeData = null; });
+            connection.on('data', (data) => {
+              if (data?.type === 'disconnect') connection.close();
+              if (data?.type === 'talk') setCameraMicMuted(Boolean(data.on));
+            });
+            connection.on('close', () => { activeData = null; setCameraMicMuted(false); });
+          });
+          // La Mac llama de vuelta sólo para hablarle al bebé.
+          peer.on('call', (call) => {
+            call.answer();
+            call.on('stream', playTalkback);
+            call.on('close', () => { $('talkbackState').textContent = 'Voz desde la Mac: en espera.'; setCameraMicMuted(false); });
+            call.on('error', () => { $('talkbackState').textContent = 'Voz desde la Mac: error de conexión.'; });
           });
           peer.on('error', (error) => { setStatus(ui.cameraStatus, error.type === 'unavailable-id' ? 'Ese enlace ya está activo en otro lugar. Recarga la página para crear uno nuevo.' : `Error de conexión: ${error.type}.`, 'error'); });
         };
@@ -176,48 +315,198 @@
           if (!window.Peer) { setStatus(ui.cameraStatus, 'No se pudo cargar el componente de conexión. Comprueba tu Internet y vuelve a abrir la página.', 'error'); return; }
           if (!navigator.mediaDevices?.getUserMedia) { setStatus(ui.cameraStatus, 'Este navegador no permite abrir la cámara. Usa Safari o Chrome moderno mediante HTTPS.', 'error'); return; }
           $('startCamera').disabled = true; setStatus(ui.cameraStatus, 'Pidiendo permiso a la cámara…');
+          try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch {}
           try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, ...qualityConstraints() }, audio: $('includeAudio').checked ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false } : false });
-            showVideo(stream, true); announceCamera(randomRoom()); startMotionDetection(); $('stopCamera').disabled = false;
-          } catch (error) { setStatus(ui.cameraStatus, error.name === 'NotAllowedError' ? 'Permiso denegado. Autoriza cámara y micrófono en el navegador.' : `No pude abrir la cámara: ${error.message}`, 'error'); $('startCamera').disabled = false; }
+            rawStream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: { ideal: 'environment' }, ...qualityConstraints() },
+              audio: $('includeAudio').checked ? { echoCancellation: true, noiseSuppression: false, autoGainControl: false, channelCount: 1 } : false
+            });
+            outgoingStream = await buildOutgoingStream(rawStream);
+            showVideo(outgoingStream, true);
+            ui.talkAudio.play().catch(() => {});
+            announceCamera(randomRoom()); startMotionDetection(); keepAwake();
+            $('stopCamera').disabled = false;
+          } catch (error) {
+            setStatus(ui.cameraStatus, error.name === 'NotAllowedError' ? 'Permiso denegado. Autoriza cámara y micrófono en el navegador.' : `No pude abrir la cámara: ${error.message}`, 'error');
+            $('startCamera').disabled = false;
+          }
         };
+        const stopEverything = () => {
+          clearInterval(motionTimer); motionTimer = null; lastFrame = null;
+          stopAlarm();
+          if (talking) setTalking(false);
+          if (talkCall) { talkCall.close(); talkCall = null; }
+          if (activeCall) { activeCall.close(); activeCall = null; }
+          if (activeData) { activeData.close(); activeData = null; }
+          if (peer) { peer.destroy(); peer = null; }
+          [rawStream, outgoingStream, talkStream].forEach((media) => media?.getTracks().forEach((track) => track.stop()));
+          rawStream = outgoingStream = talkStream = null;
+          camAudio?.ctx.close().catch(() => {}); camAudio = null;
+          try { wakeLock?.release(); } catch {}
+          wakeLock = null;
+          ui.video.srcObject = null; ui.videoEmpty.hidden = false; setLive(false);
+        };
+
+        /* ---------- Mac: escuchar, hablar y alarma ---------- */
+
         const audioBoostValue = () => Number($('audioBoost').value) / 100;
-        const showAudioLevel = () => { $('audioLevel').textContent = `${$('audioBoost').value}%`; if (audioGain) audioGain.gain.setTargetAtTime(audioBoostValue(), audioContext.currentTime, .04); };
-        const ensureAudioContext = async () => {
-          if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-          }
-          await audioContext.resume();
-          return audioContext.state === 'running';
+        const alarmVolumeValue = () => Number($('alarmVolume').value) / 100;
+        const ensureContext = async () => {
+          if (!mon.ctx) mon.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (mon.ctx.state !== 'running') { try { await mon.ctx.resume(); } catch {} }
+          if (!mon.alarm) { mon.alarm = mon.ctx.createGain(); mon.alarm.gain.value = alarmVolumeValue(); mon.alarm.connect(mon.ctx.destination); }
+          const ready = mon.ctx.state === 'running';
+          $('alarmHint').hidden = ready;
+          return ready;
         };
-        const ensureAudioPipeline = async () => {
-          if (!remoteAudioStream?.getAudioTracks().length) return false;
-          if (!(await ensureAudioContext())) return false;
-          if (!audioGain) {
-            const source = audioContext.createMediaStreamSource(remoteAudioStream);
-            audioGain = audioContext.createGain();
-            const compressor = audioContext.createDynamicsCompressor();
-            compressor.threshold.value = -24; compressor.knee.value = 26; compressor.ratio.value = 10; compressor.attack.value = .003; compressor.release.value = .22;
-            source.connect(audioGain).connect(compressor).connect(audioContext.destination);
+        const applyMonitorSettings = () => {
+          if (!mon.pre) return;
+          const now = mon.ctx.currentTime, compressing = $('audioCompress').checked;
+          mon.pre.gain.setTargetAtTime(Math.max(0.0001, audioBoostValue()), now, 0.05);
+          mon.compOut.gain.setTargetAtTime(compressing ? 1.9 : 0.0001, now, 0.05);
+          mon.bypass.gain.setTargetAtTime(compressing ? 0.0001 : 1, now, 0.05);
+          mon.master.gain.setTargetAtTime(mon.on && !talking ? 1 : 0.0001, now, 0.03);
+        };
+        const monitorMeterLoop = () => {
+          if (!mon.analyser) { mon.meterOn = false; return; }
+          const level = levelOf(mon.analyser, mon.data);
+          paintMeter($('audioMeter'), level);
+          if (!talking) $('audioState').textContent = mon.on ? (level > 0.015 ? 'sonando' : 'en silencio') : (level > 0.015 ? 'llega sonido · apagado' : 'apagado');
+          requestAnimationFrame(monitorMeterLoop);
+        };
+        const buildMonitor = async () => {
+          if (!remoteStream?.getAudioTracks().length) return false;
+          if (!(await ensureContext())) return false;
+          if (!mon.src) {
+            const ctx = mon.ctx;
+            mon.src = ctx.createMediaStreamSource(remoteStream);
+            const highpass = ctx.createBiquadFilter(); highpass.type = 'highpass'; highpass.frequency.value = 85;
+            mon.pre = ctx.createGain();
+            mon.comp = ctx.createDynamicsCompressor();
+            mon.comp.threshold.value = -36; mon.comp.knee.value = 30; mon.comp.ratio.value = 8; mon.comp.attack.value = 0.004; mon.comp.release.value = 0.25;
+            mon.compOut = ctx.createGain(); mon.bypass = ctx.createGain();
+            const limiter = softLimiter(ctx);
+            mon.master = ctx.createGain(); mon.master.gain.value = 0.0001;
+            mon.analyser = ctx.createAnalyser(); mon.analyser.fftSize = 1024; mon.data = new Uint8Array(mon.analyser.fftSize);
+            mon.nodes = [mon.src, highpass, mon.pre, mon.comp, mon.compOut, mon.bypass, limiter, mon.master, mon.analyser];
+            mon.src.connect(highpass); highpass.connect(mon.pre);
+            mon.pre.connect(mon.comp); mon.comp.connect(mon.compOut); mon.compOut.connect(limiter);
+            mon.pre.connect(mon.bypass); mon.bypass.connect(limiter);
+            limiter.connect(mon.analyser); limiter.connect(mon.master); mon.master.connect(ctx.destination);
+            if (!mon.meterOn) { mon.meterOn = true; monitorMeterLoop(); }
           }
-          audioGain.gain.setValueAtTime(audioBoostValue(), audioContext.currentTime);
+          applyMonitorSettings();
           return true;
         };
-        const soundAlert = () => {
-          if (!alertArmed || !audioContext || audioContext.state !== 'running') return;
-          const now = audioContext.currentTime;
-          [0, .26, .52].forEach((start, index) => {
-            const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
-            oscillator.type = 'square'; oscillator.frequency.setValueAtTime(index === 1 ? 660 : 920, now + start);
-            gain.gain.setValueAtTime(0.0001, now + start); gain.gain.exponentialRampToValueAtTime(.34, now + start + .015); gain.gain.exponentialRampToValueAtTime(.0001, now + start + .20);
-            oscillator.connect(gain).connect(audioContext.destination); oscillator.start(now + start); oscillator.stop(now + start + .22);
-          });
+        const teardownMonitor = () => {
+          (mon.nodes || []).forEach((node) => { try { node.disconnect(); } catch {} });
+          mon.nodes = null; mon.src = null; mon.pre = null; mon.analyser = null;
+        };
+        const alarmBurst = () => {
+          if (!mon.ctx || mon.ctx.state !== 'running' || !mon.alarm) return;
+          const start = mon.ctx.currentTime + 0.02;
+          for (let i = 0; i < 6; i++) {
+            const at = start + i * 0.17;
+            const oscillator = mon.ctx.createOscillator(), gain = mon.ctx.createGain();
+            oscillator.type = 'square'; oscillator.frequency.setValueAtTime(i % 2 ? 1320 : 880, at);
+            gain.gain.setValueAtTime(0.0001, at);
+            gain.gain.exponentialRampToValueAtTime(0.85, at + 0.012);
+            gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.15);
+            oscillator.connect(gain); gain.connect(mon.alarm);
+            oscillator.start(at); oscillator.stop(at + 0.16);
+          }
+        };
+        function stopAlarm() {
+          alarmSeq++;
+          clearInterval(ringTimer); clearTimeout(ringStopTimer); clearInterval(titleTimer);
+          ringTimer = ringStopTimer = titleTimer = null; ringing = false;
+          if (mon.alarm && mon.ctx) mon.alarm.gain.setTargetAtTime(0.0001, mon.ctx.currentTime, 0.01);
+          $('stopAlarm').disabled = true; $('alarmBanner').hidden = true;
+          document.title = baseTitle;
+        }
+        const startAlarm = async (test = false) => {
+          const seq = alarmSeq;
+          if (!(await ensureContext())) { setStatus(ui.viewerStatus, 'El navegador aún no permite sonido: pulsa “Probar alarma” una vez.', 'warn'); return; }
+          if (seq !== alarmSeq) return; // la silenciaron mientras arrancaba
+          clearInterval(ringTimer); clearTimeout(ringStopTimer);
+          mon.alarm.gain.setTargetAtTime(alarmVolumeValue(), mon.ctx.currentTime, 0.01);
+          ringing = true; $('stopAlarm').disabled = false;
+          alarmBurst();
+          const repeat = $('alarmRepeat').checked && !test;
+          if (repeat) { ringTimer = setInterval(alarmBurst, 1250); ringStopTimer = setTimeout(stopAlarm, 90000); }
+          else ringStopTimer = setTimeout(stopAlarm, 1300);
+        };
+        const flashTitle = () => {
+          clearInterval(titleTimer);
+          titleTimer = setInterval(() => { document.title = document.title.startsWith('🔴') ? baseTitle : '🔴 Movimiento · Vigía'; }, 900);
+        };
+        const notifySystem = (title, body) => {
+          if (!$('notifyOs').checked || !('Notification' in window) || Notification.permission !== 'granted') return;
+          try { new Notification(title, { body, tag: 'vigia', renotify: true }); } catch {}
+        };
+        const addLog = (text, at) => {
+          const item = document.createElement('li');
+          item.innerHTML = `<span></span><span>${clock(at)}</span>`;
+          item.firstChild.textContent = text;
+          $('motionLog').prepend(item);
+          while ($('motionLog').children.length > 6) $('motionLog').lastElementChild.remove();
+        };
+        const onMotion = (data) => {
+          const at = data?.at || Date.now();
+          ui.viewerMotionOutput.textContent = `Detectado a las ${clock(at)}`;
+          ui.viewerMotionOutput.classList.add('alert');
+          $('alarmBannerText').textContent = `Movimiento en la habitación · ${clock(at)}`;
+          $('alarmBanner').hidden = false;
+          setLive(true, true);
+          addLog('Movimiento', at);
+          if ($('autoAlert').checked) { startAlarm(); flashTitle(); notifySystem('Vigía · movimiento detectado', `En la habitación a las ${clock(at)}`); }
+          setTimeout(() => { ui.viewerMotionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2400);
+        };
+        function setTalking(on) {
+          const button = $('talkButton');
+          talking = on;
+          talkStream?.getAudioTracks().forEach((track) => { track.enabled = on; });
+          sendData({ type: 'talk', on });
+          button.classList.toggle('talking', on);
+          button.textContent = on ? '⏹ Dejar de hablar' : '🎙️ Hablar';
+          $('talkState').textContent = on ? 'hablando…' : (talkStream ? 'micrófono en silencio' : 'micrófono apagado');
+          if (on) $('audioState').textContent = 'en pausa mientras hablas';
+          applyMonitorSettings();
+        }
+        const openTalkChannel = async () => {
+          if (!peer || !viewerRoom) { setStatus(ui.viewerStatus, 'Conecta primero con la cámara.', 'warn'); return false; }
+          if (!talkStream) {
+            $('talkState').textContent = 'pidiendo permiso…';
+            try {
+              talkStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+              talkStream.getAudioTracks().forEach((track) => { track.enabled = false; });
+            } catch {
+              $('talkState').textContent = 'sin permiso de micrófono';
+              setStatus(ui.viewerStatus, 'Permite el micrófono de la Mac para poder hablarle al bebé.', 'warn');
+              return false;
+            }
+          }
+          if (!talkCall) {
+            talkCall = peer.call(viewerRoom, talkStream, { metadata: { kind: 'talk' }, sdpTransform });
+            boostAudioSender(talkCall);
+            talkCall.on('close', () => { talkCall = null; if (talking) setTalking(false); });
+            talkCall.on('error', () => { talkCall = null; $('talkState').textContent = 'no se pudo abrir el canal de voz'; });
+          }
+          return true;
+        };
+        const toggleTalk = async (force) => {
+          const wanted = force === undefined ? !talking : force;
+          if (wanted === talking) return;
+          if (wanted) { if (await openTalkChannel()) setTalking(true); }
+          else setTalking(false);
         };
         const connectViewer = (room) => {
           if (!room) return;
           if (!window.Peer) { setStatus(ui.viewerStatus, 'No se pudo cargar el componente de conexión. Comprueba tu Internet y vuelve a abrir la página.', 'error'); return; }
-          showViewer(); $('pasteArea').hidden = true; $('toggleSound').disabled = false; $('armAlert').disabled = false; $('fullScreen').disabled = false;
+          viewerRoom = room;
+          showViewer(); $('pasteArea').hidden = true; $('fullScreen').disabled = false; $('reconnect').disabled = false;
           setStatus(ui.viewerStatus, 'Buscando la cámara…', 'warn');
+          if (peer) { try { peer.destroy(); } catch {} }
           peer = new Peer(peerOptions());
           peer.on('open', () => {
             activeData = peer.connect(room, { reliable: true });
@@ -226,34 +515,103 @@
             activeData.on('data', (data) => {
               if (data?.type === 'ready') setStatus(ui.viewerStatus, 'Cámara encontrada. Recibiendo video…', 'good');
               if (data?.type === 'busy') setStatus(ui.viewerStatus, 'Esta cámara ya está siendo vista en otra Mac.', 'error');
-              if (data?.type === 'motion') { ui.viewerMotion.hidden = false; ui.viewerMotionOutput.textContent = `Detectado a las ${new Date(data.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`; ui.viewerMotionOutput.classList.add('alert'); setLive(true, true); soundAlert(); setTimeout(() => { ui.viewerMotionOutput.classList.remove('alert'); setLive(Boolean(activeCall), false); }, 2300); }
+              if (data?.type === 'motion') onMotion(data);
             });
             activeData.on('close', () => { if (!activeCall) setStatus(ui.viewerStatus, 'La cámara se desconectó.', 'warn'); });
-            peer.on('call', (call) => { clearTimeout(timeout); activeCall = call; call.answer(); call.on('stream', (remoteStream) => { remoteAudioStream = remoteStream; showVideo(remoteStream, true); $('audioControls').hidden = !remoteStream.getAudioTracks().length; setLive(true); setStatus(ui.viewerStatus, 'En directo · vídeo cifrado.', 'good'); }); call.on('close', () => { setLive(false); setStatus(ui.viewerStatus, 'La cámara dejó de transmitir.', 'warn'); }); call.on('error', () => setStatus(ui.viewerStatus, 'No se pudo recibir el video. Prueba que ambos dispositivos tengan buena red.', 'error')); });
+            peer.on('call', (call) => {
+              clearTimeout(timeout);
+              activeCall = call;
+              call.answer();
+              call.on('stream', async (stream) => {
+                remoteStream = stream;
+                showVideo(stream, true);
+                const hasAudio = Boolean(stream.getAudioTracks().length);
+                $('audioControls').hidden = !hasAudio;
+                $('talkBlock').hidden = false;
+                setLive(true); setStatus(ui.viewerStatus, 'En directo · vídeo cifrado.', 'good');
+                if (hasAudio && mon.ctx) { await buildMonitor(); }
+              });
+              call.on('close', () => {
+                setLive(false); activeCall = null;
+                setStatus(ui.viewerStatus, 'La cámara dejó de transmitir.', 'warn');
+                if ($('autoAlert').checked) { addLog('Cámara desconectada'); notifySystem('Vigía · cámara desconectada', 'Dejó de llegar vídeo desde el celular.'); startAlarm(true); }
+              });
+              call.on('error', () => setStatus(ui.viewerStatus, 'No se pudo recibir el video. Prueba que ambos dispositivos tengan buena red.', 'error'));
+            });
           });
           peer.on('error', (error) => setStatus(ui.viewerStatus, `Error de conexión: ${error.type}.`, 'error'));
         };
+
+        /* ---------- controles ---------- */
+
         $('chooseCamera').addEventListener('click', showCamera);
         $('chooseViewer').addEventListener('click', showViewer);
         $('startCamera').addEventListener('click', startCamera);
         $('stopCamera').addEventListener('click', () => { stopEverything(); $('startCamera').disabled = false; $('stopCamera').disabled = true; ui.shareBox.hidden = true; setStatus(ui.cameraStatus, 'Cámara detenida. El enlace anterior ya no transmite.', 'warn'); });
-        $('copyLink').addEventListener('click', async () => { try { await navigator.clipboard.writeText(ui.shareLink.value); $('copyLink').textContent = 'Copiado'; setTimeout(() => $('copyLink').textContent = 'Copiar', 1600); } catch { ui.shareLink.select(); document.execCommand('copy'); } });
-        $('openView').addEventListener('click', () => { try { const url = new URL($('viewLink').value.trim()); const room = url.searchParams.get('view') || new URLSearchParams(url.hash.slice(1)).get('view'); if (!room) throw new Error(); history.replaceState({}, '', url.href); connectViewer(room); } catch { setStatus(ui.viewerStatus, 'Ese enlace no parece válido.', 'error'); } });
-        $('audioBoost').addEventListener('input', showAudioLevel);
-        $('toggleSound').addEventListener('click', async () => {
-          if (viewerAudioOn) { audioContext?.suspend(); viewerAudioOn = false; $('toggleSound').textContent = 'Activar audio amplificado'; return; }
-          const started = await ensureAudioPipeline();
-          if (!started) { setStatus(ui.viewerStatus, 'La cámara aún no está enviando audio. Revisa que “Incluir audio ambiental” esté activado en el celular.', 'warn'); return; }
-          viewerAudioOn = true; $('toggleSound').textContent = 'Silenciar audio';
+        $('copyLink').addEventListener('click', async () => { try { await navigator.clipboard.writeText(ui.shareLink.value); $('copyLink').textContent = 'Copiado'; setTimeout(() => { $('copyLink').textContent = 'Copiar'; }, 1600); } catch { ui.shareLink.select(); document.execCommand('copy'); } });
+        $('openView').addEventListener('click', () => {
+          try {
+            const url = new URL($('viewLink').value.trim());
+            const room = url.searchParams.get('view') || new URLSearchParams(url.hash.slice(1)).get('view');
+            if (!room) throw new Error('enlace sin sala');
+            history.replaceState({}, '', url.href);
+            connectViewer(room);
+          } catch { setStatus(ui.viewerStatus, 'Ese enlace no parece válido.', 'error'); }
         });
-        $('armAlert').addEventListener('click', async () => {
-          const started = await ensureAudioContext();
-          if (!started) { setStatus(ui.viewerStatus, 'Activa el audio de la cámara antes de armar la alerta.', 'warn'); return; }
-          alertArmed = !alertArmed; $('armAlert').textContent = alertArmed ? 'Desactivar alerta sonora' : 'Activar alerta sonora'; if (alertArmed) soundAlert();
+        $('micBoost').addEventListener('input', () => {
+          $('micBoostText').textContent = `${$('micBoost').value}%`;
+          if (camAudio) camAudio.gain.gain.setTargetAtTime(micBoostValue(), camAudio.ctx.currentTime, 0.05);
+        });
+        $('sensitivity').addEventListener('input', () => { $('sensitivityText').textContent = $('sensitivity').value; });
+        $('audioBoost').addEventListener('input', () => { $('audioBoostText').textContent = `${$('audioBoost').value}%`; applyMonitorSettings(); });
+        $('audioCompress').addEventListener('change', applyMonitorSettings);
+        $('alarmVolume').addEventListener('input', () => {
+          $('alarmVolumeText').textContent = `${$('alarmVolume').value}%`;
+          if (mon.alarm && ringing) mon.alarm.gain.setTargetAtTime(alarmVolumeValue(), mon.ctx.currentTime, 0.02);
+        });
+        $('toggleSound').addEventListener('click', async () => {
+          if (mon.on) { mon.on = false; applyMonitorSettings(); $('toggleSound').textContent = 'Activar sonido'; $('toggleSound').classList.add('primary'); return; }
+          const ready = await buildMonitor();
+          if (!ready) {
+            ui.video.muted = false; ui.video.volume = 1;
+            setStatus(ui.viewerStatus, 'No pude amplificar el audio; lo reproduzco sin amplificar. Revisa que “Incluir audio ambiental” esté activo en el celular.', 'warn');
+            return;
+          }
+          mon.on = true; applyMonitorSettings();
+          ui.video.muted = true;
+          $('toggleSound').textContent = 'Silenciar'; $('toggleSound').classList.remove('primary');
+        });
+        $('talkButton').addEventListener('click', () => toggleTalk());
+        document.addEventListener('keydown', (event) => {
+          if (event.code !== 'Space' || event.repeat || ui.viewerPanel.hidden) return;
+          if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(document.activeElement?.tagName)) return;
+          event.preventDefault(); toggleTalk(true);
+        });
+        document.addEventListener('keyup', (event) => { if (event.code === 'Space' && talking) { event.preventDefault(); toggleTalk(false); } });
+        $('testAlarm').addEventListener('click', () => startAlarm(true));
+        $('stopAlarm').addEventListener('click', stopAlarm);
+        $('stopAlarmTop').addEventListener('click', stopAlarm);
+        $('notifyOs').addEventListener('change', async (event) => {
+          if (!event.target.checked) return;
+          if (!('Notification' in window)) { event.target.checked = false; setStatus(ui.viewerStatus, 'Este navegador no permite notificaciones del sistema.', 'warn'); return; }
+          if (Notification.permission === 'default') { try { await Notification.requestPermission(); } catch {} }
+          if (Notification.permission !== 'granted') { event.target.checked = false; setStatus(ui.viewerStatus, 'macOS bloqueó las notificaciones de esta página. Actívalas en Ajustes del navegador.', 'warn'); }
         });
         $('fullScreen').addEventListener('click', () => ui.video.requestFullscreen?.());
+        $('reconnect').addEventListener('click', () => { if (viewerRoom) { remoteStream = null; teardownMonitor(); connectViewer(viewerRoom); } });
+        window.addEventListener('hashchange', () => {
+          if (!ui.cameraPanel.hidden) return; // el celular no debe cambiar de rol solo
+          const room = new URLSearchParams(location.hash.slice(1)).get('view');
+          if (room && room !== viewerRoom) { remoteStream = null; teardownMonitor(); connectViewer(room); }
+        });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && outgoingStream) keepAwake(); });
         window.addEventListener('beforeunload', stopEverything);
-        if (viewRoom) { showViewer(); ui.viewerIntro.textContent = 'Conectando de forma privada con la cámara…'; setTimeout(() => connectViewer(viewRoom), 80); }
+
+        if (viewRoom) {
+          showViewer();
+          ui.viewerIntro.textContent = 'Conectando de forma privada con la cámara…';
+          setTimeout(() => connectViewer(viewRoom), 80);
+        }
       })();
     </script>
   </body>
